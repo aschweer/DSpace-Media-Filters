@@ -12,6 +12,8 @@ import java.io.*;
 
 /**
  * @author Andrea Schweer schweer@waikato.ac.nz
+ *
+ * See http://blog.prashanthellina.com/2008/02/03/create-pdf-thumbnails-using-imagemagick-on-linux/
  */
 public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterInputFormats {
 
@@ -117,7 +119,7 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
     private void loadSettings() {
         System.out.println("Loading settings for ImageMagick Thumbnailer");
         convertPath = ConfigurationManager.getProperty("imagemagick.path.convert");
-        thumbWidth = ConfigurationManager.getIntProperty("thumbnail.thumbWidth", thumbWidth);
+        thumbWidth = ConfigurationManager.getIntProperty("thumbnail.maxwidth", thumbWidth);
     }
 
     public String[] getInputMIMETypes() {
