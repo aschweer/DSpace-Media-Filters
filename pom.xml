@@ -37,4 +37,10 @@
             <version>1.7.2</version>
         </dependency>
     </dependencies>
+    
+    <scm>
+	<connection>scm:git:git://github.com/aschweer/DSpace-Media-Filters.git</connection>
+	<url>https://github.com/aschweer/DSpace-Media-Filters</url>
+	<developerConnection>scm:git:ssh://git@github.com/aschweer/DSpace-Media-Filters.git</developerConnection>
+    </scm>
 </project>
