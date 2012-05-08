@@ -41,4 +41,20 @@
 	<url>https://github.com/aschweer/DSpace-Media-Filters</url>
 	<developerConnection>scm:git:ssh://git@github.com/aschweer/DSpace-Media-Filters.git</developerConnection>
     </scm>
+
+    <distributionManagement>
+      <!-- Publish versioned releases here -->
+      <repository>
+	<id>lconz-irr</id>
+	<name>LCoNZ IRR Releases</name>
+	<url>http://mvnrepo.its.waikato.ac.nz:8081/nexus/content/repositories/lconz-irr-releases/</url>
+      </repository>
+      
+      <!-- Publish snapshots here -->
+      <snapshotRepository>
+	<id>lconz-irr</id>
+	<name>LCoNZ IRR Snapshots</name>
+	<url>http://mvnrepo.its.waikato.ac.nz:8081/nexus/content/repositories/lconz-irr-snapshots/</url>
+      </snapshotRepository>
+    </distributionManagement>
 </project>
