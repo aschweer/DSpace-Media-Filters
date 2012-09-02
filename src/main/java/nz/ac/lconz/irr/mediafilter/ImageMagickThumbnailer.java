@@ -1,5 +1,6 @@
 package nz.ac.lconz.irr.mediafilter;
 
+import org.apache.commons.exec.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.dspace.app.mediafilter.MediaFilter;
@@ -9,9 +10,12 @@ import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Utils;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
- * @author Andrea Schweer schweer@waikato.ac.nz
+ * @author Andrea Schweer schweer@waikato.ac.nz for LCoNZ
  *
  * See http://blog.prashanthellina.com/2008/02/03/create-pdf-thumbnails-using-imagemagick-on-linux/
  */
@@ -24,8 +28,9 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
     // from thumbnail.thumbWidth in config
     private int thumbWidth = 200;
     private String convertPath;
+	private static final int CONVERT_TIMEOUT = 120 * 1000; // 120 ms = 2 minutes
 
-    public String getFilteredName(String oldFilename) {
+	public String getFilteredName(String oldFilename) {
         return oldFilename + ".png";
     }
 
@@ -77,22 +82,32 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
         return new ByteArrayInputStream(imageData);
     }
 
-    private int convert(String inFileName, String outFileName) throws IOException {
-        int status;
-        String commandLine = CONVERT_COMMAND.replaceFirst("@COMMAND@", convertPath);
-        commandLine = commandLine.replaceFirst("@WIDTH@", String.valueOf(thumbWidth));
-        commandLine = commandLine.replaceFirst("@INFILE@", inFileName);
-        commandLine = commandLine.replaceFirst("@OUTFILE@", outFileName);
+    private int convert(String inFileName, String outFileName) throws Exception {
+	    // from http://commons.apache.org/exec/tutorial.html
+	    CommandLine cmdLine = new CommandLine(convertPath);
+	    cmdLine.addArgument("-thumbnail");
+	    cmdLine.addArgument(thumbWidth + "x");
+	    cmdLine.addArgument("${infile}[0]");
+	    cmdLine.addArgument("${outfile}");
+	    Map<String, File> map = new HashMap();
+	    map.put("infile", new File(inFileName));
+	    map.put("outfile", new File(outFileName));
+	    cmdLine.setSubstitutionMap(map);
 
-        try {
-            log.info("About to run " + commandLine);
-            Process convertProc = Runtime.getRuntime().exec(commandLine);
-            status = convertProc.waitFor();
-        } catch (InterruptedException ie) {
-            log.error("Failed to create thumbnail: ", ie);
-            throw new IllegalArgumentException("Failed to create thumbnail: ", ie);
-        }
-        return status;
+	    Executor executor = new DefaultExecutor();
+	    ExecuteWatchdog watchdog = new ExecuteWatchdog(CONVERT_TIMEOUT);
+	    executor.setWatchdog(watchdog);
+
+	    DefaultExecuteResultHandler resultHandler;
+	    try {
+	        resultHandler = new FilterResultHandler(watchdog);
+	        executor.execute(cmdLine, resultHandler);
+	    } catch (Exception e) {
+		    log.error("Problem converting " + inFileName + " to " + outFileName, e);
+		    throw e;
+	    }
+	    resultHandler.waitFor();
+	    return resultHandler.getExitValue();
     }
 
     private String makeTempInFile(InputStream sourceStream) throws IOException {
