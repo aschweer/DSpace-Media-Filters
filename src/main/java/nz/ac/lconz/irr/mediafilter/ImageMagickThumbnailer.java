@@ -93,10 +93,12 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
 	    map.put("infile", new File(inFileName));
 	    map.put("outfile", new File(outFileName));
 	    cmdLine.setSubstitutionMap(map);
+	    log.debug("about to run " + cmdLine.toString());
 
 	    Executor executor = new DefaultExecutor();
 	    ExecuteWatchdog watchdog = new ExecuteWatchdog(CONVERT_TIMEOUT);
 	    executor.setWatchdog(watchdog);
+	    executor.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
 
 	    DefaultExecuteResultHandler resultHandler;
 	    try {
