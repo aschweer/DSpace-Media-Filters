@@ -23,9 +23,7 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
 
     private static Logger log = Logger.getLogger(ImageMagickThumbnailer.class);
 
-    private static final String CONVERT_COMMAND = "@COMMAND@ -thumbnail @WIDTH@x @INFILE@[0] @OUTFILE@";
-
-    // from thumbnail.thumbWidth in config
+	// from thumbnail.thumbWidth in config
     private int thumbWidth = 200;
     private String convertPath;
 	private static final int CONVERT_TIMEOUT = 120 * 1000; // 120 ms = 2 minutes
@@ -86,7 +84,8 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
 	    // from http://commons.apache.org/exec/tutorial.html
 	    CommandLine cmdLine = new CommandLine(convertPath);
 	    cmdLine.addArgument("-thumbnail");
-	    cmdLine.addArgument(thumbWidth + "x");
+	    // maximum size thumbWidth x thumbWidth; keep ratio; don't enlarge: http://www.imagemagick.org/Usage/thumbnails/#fit
+	    cmdLine.addArgument("'" + thumbWidth + "x" + thumbWidth + ">'");
 	    cmdLine.addArgument("${infile}[0]");
 	    cmdLine.addArgument("${outfile}");
 	    Map<String, File> map = new HashMap();
