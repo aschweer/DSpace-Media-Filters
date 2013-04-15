@@ -22,9 +22,14 @@ import java.util.concurrent.TimeoutException;
 public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterInputFormats {
 
     private static Logger log = Logger.getLogger(ImageMagickThumbnailer.class);
+	public static final int DEFAULT_MAXWIDTH = 200;
 
-	// from thumbnail.thumbWidth in config
-    private int thumbWidth = 200;
+	public ImageMagickThumbnailer() {
+		thumbWidth = ConfigurationManager.getIntProperty("imagemagick.thumb.maxwidth", DEFAULT_MAXWIDTH);
+	}
+
+	// from imagemagick.thumb.maxwidth in config
+    private int thumbWidth;
     private String convertPath;
 	private static final int CONVERT_TIMEOUT = 120 * 1000; // 120 ms = 2 minutes
 
