@@ -4,7 +4,7 @@
 
     <groupId>nz.ac.lconz.irr</groupId>
     <artifactId>lconz-media-filters</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
   <name>LCoNZ DSpace Media Filters</name>
