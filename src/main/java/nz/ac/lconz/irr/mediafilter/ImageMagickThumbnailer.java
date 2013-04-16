@@ -23,13 +23,11 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
 
     private static Logger log = Logger.getLogger(ImageMagickThumbnailer.class);
 	public static final int DEFAULT_MAXWIDTH = 200;
-
-	public ImageMagickThumbnailer() {
-		thumbWidth = ConfigurationManager.getIntProperty("imagemagick.thumb.maxwidth", DEFAULT_MAXWIDTH);
-	}
+	public static final int DEFAULT_MAXHEIGHT = 200;
 
 	// from imagemagick.thumb.maxwidth in config
     private int thumbWidth;
+	private int thumbHeight;
     private String convertPath;
 	private static final int CONVERT_TIMEOUT = 120 * 1000; // 120 ms = 2 minutes
 
@@ -89,8 +87,8 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
 	    // from http://commons.apache.org/exec/tutorial.html
 	    CommandLine cmdLine = new CommandLine(convertPath);
 	    cmdLine.addArgument("-thumbnail");
-	    // maximum size thumbWidth x thumbWidth; keep ratio; don't enlarge: http://www.imagemagick.org/Usage/thumbnails/#fit
-	    cmdLine.addArgument("'" + thumbWidth + "x" + thumbWidth + ">'");
+	    // maximum size thumbWidth x thumbHeight; keep ratio; don't enlarge: http://www.imagemagick.org/Usage/thumbnails/#fit
+	    cmdLine.addArgument("'" + thumbWidth + "x" + thumbHeight + ">'");
 	    cmdLine.addArgument("${infile}[0]");
 	    cmdLine.addArgument("${outfile}");
 	    Map<String, File> map = new HashMap();
@@ -138,9 +136,10 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
     }
 
     private void loadSettings() {
-        System.out.println("Loading settings for ImageMagick Thumbnailer");
         convertPath = ConfigurationManager.getProperty("imagemagick.path.convert");
-        thumbWidth = ConfigurationManager.getIntProperty("thumbnail.maxwidth", thumbWidth);
+	    thumbWidth = ConfigurationManager.getIntProperty("imagemagick.thumb.maxwidth", DEFAULT_MAXWIDTH);
+	    thumbHeight = ConfigurationManager.getIntProperty("imagemagick.thumb.maxheight", DEFAULT_MAXHEIGHT);
+	    log.info("Using thumbWidth " + thumbWidth + ", thumbHeight " + thumbHeight);
     }
 
     public String[] getInputMIMETypes() {
