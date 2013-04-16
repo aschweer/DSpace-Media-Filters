@@ -57,10 +57,10 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
         }
 
         String inFileName = makeTempInFile(sourceStream);
-        System.out.println("Made temporary input file " + inFileName);
+        log.debug("Made temporary input file " + inFileName);
         
         String outFileName = inFileName + ".png";
-        System.out.println("Thumbnail will be in " + outFileName);
+        log.debug("Thumbnail will be in " + outFileName);
 
         int status = 0;
         status = convert(inFileName, outFileName);
