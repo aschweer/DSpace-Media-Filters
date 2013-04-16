@@ -78,7 +78,8 @@ public class ImageMagickThumbnailer extends MediaFilter implements SelfRegisterI
         FileInputStream fis = new FileInputStream(outFileName);
         byte[] imageData = IOUtils.toByteArray(fis);
         IOUtils.closeQuietly(fis);
-        new File(outFileName).deleteOnExit();
+        new File(outFileName).delete();
+	    new File(inFileName).delete();
 
         return new ByteArrayInputStream(imageData);
     }
